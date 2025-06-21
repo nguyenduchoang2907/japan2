@@ -1,10 +1,33 @@
+import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/footer/Footer";
+import orderApi from "@/api/orderApi"; // 👈 IMPORT API
 
 const OrdersReturn = () => {
+  console.log("[DEBUG] 🧾 OrdersReturn component loaded");
+
   const [params] = useSearchParams();
   const responseCode = params.get("vnp_ResponseCode");
+  const txnRef = params.get("vnp_TxnRef"); // 👈 dạng: 87-1750527154133
+
+  useEffect(() => {
+    if (responseCode === "00" && txnRef) {
+      const orderId = parseInt(txnRef.split("-")[0]); // 👉 tách orderId
+
+      if (!isNaN(orderId)) {
+        // 👇 Cập nhật is_paid thành true
+        orderApi
+          .update(orderId, { is_paid: true })
+          .then(() => {
+            console.log("✅ Order marked as paid from FE");
+          })
+          .catch((err) => {
+            console.error("❌ Failed to update order:", err);
+          });
+      }
+    }
+  }, [responseCode, txnRef]);
 
   return (
     <div
