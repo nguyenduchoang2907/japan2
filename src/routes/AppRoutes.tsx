@@ -63,8 +63,8 @@ const AppRoutes = () => {
           <Route path="/food/:id" element={<AuthChecker><FoodDetail /></AuthChecker>} />
           <Route path="/orders" element={<AuthChecker><Orders /></AuthChecker>} />
           <Route path="/vip" element={<AuthChecker><VipProgram /></AuthChecker>} />
-          <Route path="*" element={<AuthChecker><NotFound /></AuthChecker>} />
           <Route path="/order-return" element={<AuthChecker><OrdersReturn /></AuthChecker>} />
+          <Route path="*" element={<AuthChecker><NotFound /></AuthChecker>} />
 
         </Routes>
       </Suspense>
