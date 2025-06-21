@@ -2,21 +2,26 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/footer/Footer";
-import orderApi from "@/api/orderApi"; // 👈 IMPORT API
+import orderApi from "@/api/orderApi";
 
 const OrdersReturn = () => {
   console.log("[DEBUG] 🧾 OrdersReturn component loaded");
 
   const [params] = useSearchParams();
   const responseCode = params.get("vnp_ResponseCode");
-  const txnRef = params.get("vnp_TxnRef"); // 👈 dạng: 87-1750527154133
+  const txnRef = params.get("vnp_TxnRef"); // dạng: 87-1750527154133
 
   useEffect(() => {
+    console.log("[DEBUG] 📦 useEffect triggered");
+    console.log("[DEBUG] responseCode:", responseCode);
+    console.log("[DEBUG] txnRef:", txnRef);
+
     if (responseCode === "00" && txnRef) {
-      const orderId = parseInt(txnRef.split("-")[0]); // 👉 tách orderId
+      const orderId = parseInt(txnRef.split("-")[0]);
+      console.log("[DEBUG] Extracted orderId:", orderId);
 
       if (!isNaN(orderId)) {
-        // 👇 Cập nhật is_paid thành true
+        console.log("[DEBUG] Sending API call to update is_paid = true...");
         orderApi
           .update(orderId, { is_paid: true })
           .then(() => {
@@ -25,7 +30,11 @@ const OrdersReturn = () => {
           .catch((err) => {
             console.error("❌ Failed to update order:", err);
           });
+      } else {
+        console.warn("⚠️ orderId is NaN, check txnRef format");
       }
+    } else {
+      console.warn("⚠️ responseCode !== '00' or txnRef missing");
     }
   }, [responseCode, txnRef]);
 
